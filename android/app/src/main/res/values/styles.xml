@@ -1,0 +1,15 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <!-- Branded launch window (color + centered icon) so the pre-RN frame is
+             never a blank solid fill when captured as 01_LoaderScreen. -->
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+        <item name="android:statusBarColor">@color/splashBackground</item>
+        <item name="android:navigationBarColor">@color/splashBackground</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+</resources>

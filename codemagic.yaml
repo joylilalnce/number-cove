@@ -1,0 +1,37 @@
+# cm-build.yaml (React Native) — canonical Codemagic workflow for API-driven builds.
+# cm-prepare.sh copies this into the pushed repo as codemagic.yaml.
+#
+# Signing creds are NOT pre-configured in the Codemagic account (per-task tokens,
+# no browser/UI setup). Instead cm-prepare.sh passes them as per-build encrypted
+# environment variables via POST /builds `environment.variables`:
+#   MYAPP_RELEASE_KEYSTORE_BASE64 / _STORE_PASSWORD / _KEY_ALIAS / _KEY_PASSWORD
+# This step base64-decodes the keystore and Gradle reads the MYAPP_RELEASE_*
+# project properties — same shape as scripts/lib/gh-build.yml.
+workflows:
+  android-release:
+    name: Android Release Build
+    max_build_duration: 60
+    environment:
+      node: 22
+      java: 17
+    scripts:
+      - name: Install npm deps
+        script: |
+          npm ci --no-audit --no-fund
+      - name: Decode keystore
+        script: |
+          mkdir -p android/app
+          echo "$MYAPP_RELEASE_KEYSTORE_BASE64" | base64 -d > android/app/release.keystore
+          ls -lh android/app/release.keystore
+      - name: Gradle bundleRelease + assembleRelease
+        script: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew --no-daemon clean bundleRelease assembleRelease \
+            -PMYAPP_RELEASE_STORE_FILE="$CM_BUILD_DIR/android/app/release.keystore" \
+            -PMYAPP_RELEASE_STORE_PASSWORD="$MYAPP_RELEASE_STORE_PASSWORD" \
+            -PMYAPP_RELEASE_KEY_ALIAS="$MYAPP_RELEASE_KEY_ALIAS" \
+            -PMYAPP_RELEASE_KEY_PASSWORD="$MYAPP_RELEASE_KEY_PASSWORD"
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
+      - android/app/build/outputs/apk/release/*.apk

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Native launch window: shown before the RN bridge paints. Branded with the
+     app icon (centered on the splash color) so the pre-paint frame the UI runner
+     captures as 01_LoaderScreen is never a blank solid fill. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splashBackground" />
+    <item
+        android:width="200dp"
+        android:height="200dp"
+        android:gravity="center"
+        android:drawable="@mipmap/ic_launcher" />
+</layer-list>
